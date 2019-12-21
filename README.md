@@ -8,19 +8,19 @@ This application was designed with several ideologies in mind to hammer Japanese
   - Reading and Writing for the sake of(researched) memorizing
 
 # What is going on behind the scenes, programming wise:
-    - Please navigate Study/App/src/main/java/azynias/study for the entire project structure. 
+    Please navigate Study/App/src/main/java/azynias/study for the entire project structure. 
     
-    - All information is stored locally in a SQLite database on the user's android device. The reason behind this was of course the lack of funding to have actual servers host a SQL database on my end. This does include some bad security limitations security wise, however. The order, characters, and design of the database has value to it. Assuming that this idea was very valuable in concept, any hacker would immediately realize that the Android device is theirs and so is any data on the device. They would be able to extract the database at hand and 'steal' all data at hand and I would lose all value of this project. 
+    All information is stored locally in a SQLite database on the user's android device. The reason behind this was of course the lack of funding to have actual servers host a SQL database on my end. This does include some bad security limitations security wise, however. The order, characters, and design of the database has value to it. Assuming that this idea was very valuable in concept, any hacker would immediately realize that the Android device is theirs and so is any data on the device. They would be able to extract the database at hand and 'steal' all data at hand and I would lose all value of this project. 
     
-    - There was use of Google's paying API with this application, as there was content available for purchase(more study material). This has potentially no security flaws as it is relying completely on Google's end of things - I did not design any of it. 
+    There was use of Google's paying API with this application, as there was content available for purchase(more study material). This has potentially no security flaws as it is relying completely on Google's end of things - I did not design any of it. 
     
-    - Material Design principles were maintained in the design of this application. Android follows Material Design principles, so it would only make sense to follow them. 
+    Material Design principles were maintained in the design of this application. Android follows Material Design principles, so it would only make sense to follow them. 
     
-    - Singleton DBAccesser princple was followed for accessing the database. 
+    Singleton DBAccesser princple was followed for accessing the database. 
     
-    - AI OCR was depended on for comparing user drawn kanji characters to the existing database of actual characters. This relied on the Teseract engine as it was free to use. This also presented the same issue as the database, as it existed on the device itself though. As a result, the application also becomes bloated in size. 
+    AI OCR was depended on for comparing user drawn kanji characters to the existing database of actual characters. This relied on the Teseract engine as it was free to use. This also presented the same issue as the database, as it existed on the device itself though. As a result, the application also becomes bloated in size. 
     
-    - Android good practices were maintained(of the time) in development of this application. This includes using Activities for the sake of hosting fragments, of which fragments were responsible for logic of specific components to the application. 
+    Android good practices were maintained(of the time) in development of this application. This includes using Activities for the sake of hosting fragments, of which fragments were responsible for logic of specific components to the application. 
     
 
 # How does the user learn?
