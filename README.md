@@ -1,8 +1,6 @@
 # Kanji Study Application 
 
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 This application was designed with several ideologies in mind to hammer Japanese Kanji Characters efficiently and effectively in to the mind. These ideologies are as follows:
 
   - Spaced Repetition between study and learning sessions
