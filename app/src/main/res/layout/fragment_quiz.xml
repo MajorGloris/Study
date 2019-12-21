@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/customborder"
+    android:layout_height="match_parent"
+    tools:context="azynias.study.Fragments.ProgressFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_gravity="center"
+        android:text="hey"
+        android:textSize="45sp"
+        android:id="@+id/quiz_area_kanji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/answer_list_radio"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RadioButton android:id="@+id/answer_1"
+            android:textSize="25dp"
+            android:layout_margin="5dp"
+
+            android:background="@drawable/layout_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:onClick="onRadioButtonClick"/>
+        <RadioButton android:id="@+id/answer_2"
+            android:layout_margin="5dp"
+
+            android:textSize="25dp"
+            android:background="@drawable/layout_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:onClick="onRadioButtonClick"/>
+        <RadioButton android:id="@+id/answer_3"
+            android:layout_margin="5dp"
+            android:textSize="25dp"
+            android:background="@drawable/layout_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClick"/>
+        <RadioButton android:id="@+id/answer_4"
+            android:layout_margin="5dp"
+            android:textSize="25dp"
+            android:background="@drawable/layout_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:onClick="onRadioButtonClick"/>
+    </RadioGroup>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <ImageButton
+            android:background="@null"
+            android:src="@drawable/submit"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:id="@+id/quiz_next_question"
+            android:textSize="100sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+</LinearLayout>

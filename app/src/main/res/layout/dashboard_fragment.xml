@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:stretchColumns="0,1"
+    android:layout_gravity="center">
+
+    <TableRow
+        android:layout_width="wrap_content"
+        android:layout_marginRight="30dp"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/study"
+            android:background="@null"
+            android:src="@drawable/study"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <ImageButton
+                android:id="@+id/practice"
+                android:background="@null"
+                android:src="@drawable/review"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/study_textView"
+            android:text="Study"
+            />
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/practice_textView"
+            android:text="Practice"
+            />
+    </TableRow>
+
+    <TableRow
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content">
+
+        <ImageButton
+                android:id="@+id/dashboard_database"
+                android:background="@null"
+                android:src="@drawable/kanji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+        <ImageButton
+                android:id="@+id/progress_dashboard"
+                android:src="@drawable/progress"
+                android:background="@null"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Kanji_textView"
+            android:text="Kanji"
+            />
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progress_textView"
+            android:text="Progress"
+            />
+    </TableRow>
+    <!--
+    <TableRow
+            android:layout_width="match_parent"
+            android:paddingBottom="8dp"
+            android:layout_height="wrap_content">
+
+        <ImageButton
+                android:id="@+id/test_dashboard"
+                android:background="@null"
+                android:src="@drawable/study"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+
+        <ImageButton
+            android:id="@+id/about"
+            android:background="@null"
+            android:src="@drawable/study"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/s_textView"
+            android:text="Study"
+            />
+
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/p_textView"
+            android:text="Practice"
+            />
+    </TableRow> -->
+</TableLayout>
