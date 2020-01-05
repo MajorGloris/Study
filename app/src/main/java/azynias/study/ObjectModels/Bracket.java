@@ -73,7 +73,7 @@ public class Bracket {
 
         for(Kanji kanji : this.kanjiChars) {
             String character = kanji.getCharacter();
-            listOfChars.append(character + "   ");
+            listOfChars.append(character + " ");
         }
 
         return listOfChars.toString();

@@ -8,21 +8,21 @@ import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import azynias.study.Algorithms.spacedRepAlgo;
 import azynias.study.ObjectModels.Answer;
 import azynias.study.ObjectModels.Bracket;
+import azynias.study.ObjectModels.RecallQuestion;
 import azynias.study.ObjectModels.Kanji;
 import azynias.study.ObjectModels.KanjiQuestion;
 import azynias.study.ObjectModels.Question;
 import azynias.study.ObjectModels.QuizSession;
+import azynias.study.ObjectModels.RecogQuestion;
 import azynias.study.ObjectModels.Tier;
 
 /**
@@ -34,6 +34,8 @@ public class TierDBHandler extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "Tiers.db";
     private static final int DATABASE_VERSION = 1;
 
+    private static final String TABLE_TIERS = "Tiers";
+
     private static final String KEY_KANJI_ID = "id";
     private static final String RADICALS = "Radicals";
     private static final String KANJI_CHARACTER = "Character";
@@ -44,7 +46,6 @@ public class TierDBHandler extends SQLiteAssetHelper {
     private static final String KANJI_DUEDATE = "next_due_date";
     private static final String KANJI_EASINESS = "easiness";
     private static final String KANJI_CORRECT_ANSWERS = "correct_answers";
-    private static final String KANJI_PREV_DUEDATE = "prev_due_date";
     private static final String KANJI_CONSECUTIVE_ANSWERED = "consecutive_answered";
     private static final String KANJI_DATE_REVIEWED = "prev_days_interval";
 
@@ -53,6 +54,11 @@ public class TierDBHandler extends SQLiteAssetHelper {
     private static final String USER_TIER = "Tier";
     private static final String USER_BRACKET = "Bracket";
     private static final String USER_DIFFICULTY = "daily_exercise";
+    private static final String USER_FREE = "free";
+    private static final String USER_GRADE = "grade";
+    private static final String USER_UNLOCKED_TIER = "unlocked_tier";
+    private static final String USER_MULT_CHOICE = "mult_choice";
+
 
     private UserPreferences UserPrefs = UserPreferences.getInstance();
     private spacedRepAlgo smAlgo = new spacedRepAlgo();
@@ -74,15 +80,32 @@ public class TierDBHandler extends SQLiteAssetHelper {
         return sInstance;
     }
 
+    public void updateGrade(int newGr) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        String query = "SELECT * FROM " + USER_SETTINGS;
+        Cursor cursor = db.rawQuery(query, null);
+
+        cursor.moveToFirst();
+        double previous = cursor.getDouble(cursor.getColumnIndex(USER_GRADE));
+
+        int newGrade = newGr + (int)previous;
+        values.put(USER_GRADE, newGrade/2);
+        db.update(USER_SETTINGS, values, null, null);
+        db.close();
+        setUserPrefs();
+    }
+
     public void setKanjiStory(String story, int kanjiID) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.d("hello", story);
         ContentValues values = new ContentValues();
         values.put(KANJI_STORY, story); // to change story of Kanji
-        db.update(UserPrefs.getTier(), values, "id=" + kanjiID, null);
+        db.update(TABLE_TIERS, values, "id=" + kanjiID, null);
 
         db.close();
     }
+
 
     public void incorrectDueDate(int kanjiID) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -90,25 +113,56 @@ public class TierDBHandler extends SQLiteAssetHelper {
         values.put(KANJI_DUEDATE, System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1440)); // WILL SET DUE date 24 hours from time
         values.put(KANJI_CONSECUTIVE_ANSWERED, 0);
         values.put(KANJI_DATE_REVIEWED, 1);
-        db.update(UserPrefs.getTier(), values, "id=" + kanjiID, null);
+        db.update(TABLE_TIERS, values, "id=" + kanjiID, null);
 
         db.close();
+    }
+
+    public void updateTiersPurchase(String toWhatTier) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        Log.d("tierDB", "'"+ toWhatTier+ "'");
+        values.put(USER_UNLOCKED_TIER, toWhatTier);
+        db.update(USER_SETTINGS, values, null, null);
+        db.close();
+        setUserPrefs();
+    }
+
+    public void updateQuizChoice(String choice) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(USER_MULT_CHOICE, choice);
+        db.update(USER_SETTINGS, values, null, null);
+        db.close();
+        setUserPrefs();
     }
 
     public void setInitialDueDate() {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        String where = "bracket=? AND Tier=?";
+        String wheres = "bracket = " + UserPrefs.getBracket() + " AND Tier = " + UserPrefs.getTierDB();
+        String[] whereArgs = new String[] {String.valueOf(UserPrefs.getBracket()), UserPrefs.getTierDB()}; // doesn't work for some reason...
 
         values.put(KANJI_DUEDATE, System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1440));
-        db.update(UserPrefs.getTier(), values, KANJI_BRACKET + " = " + UserPrefs.getBracket(), null);
+        db.update(TABLE_TIERS, values, wheres, null);
         db.close();
+    }
+
+    public void updateDifficulty(int value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(USER_DIFFICULTY, value);
+        db.update(USER_SETTINGS, values, null, null);
+        db.close();
+        setUserPrefs();
     }
 
     public void correctKanjiDate(int quality, int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        String queryForInterval = "SELECT * FROM " + UserPrefs.getTier() + " WHERE id = " + id;
+        String queryForInterval = "SELECT * FROM " + TABLE_TIERS + " WHERE id = " + id;
         Cursor cursor = db.rawQuery(queryForInterval, null);
 
         int correct = 0;
@@ -117,6 +171,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
         long curDate = 0;
         int dateReviewed = 0;
         long date = 0;
+        long untouchedDate = 0;
 
         try {
             if(cursor.moveToFirst()) {
@@ -127,12 +182,22 @@ public class TierDBHandler extends SQLiteAssetHelper {
                 dateReviewed = cursor.getInt(cursor.getColumnIndex(KANJI_DATE_REVIEWED));
 
                 if(quality>=3) newEF = smAlgo.calcEF(EF, quality);
+                else {
+                    if(EF-0.6>1.3) {
+                        newEF -= 0.45;
+                    }
+                }
+                untouchedDate = curDate;
+
 
                 curDate = smAlgo.calcNextDay(correct+1, newEF, dateReviewed);
+
                 Log.d("ef", ""+newEF);
                 date = smAlgo.convertToMS((int)curDate) + System.currentTimeMillis();
+
                 Date dates = new Date();
                 dates.setTime((long)date);
+
                 Log.d("chesk", ""+dates.toString());
                 dateReviewed = smAlgo.convertToDays(date) - smAlgo.convertToDays(System.currentTimeMillis());
                 Log.d("days", ""+dateReviewed);
@@ -147,26 +212,20 @@ public class TierDBHandler extends SQLiteAssetHelper {
                 cursor.close();
             }
         }
-        if(readyToIncrementDate(curDate)) {
-
+        if(readyToIncrementDate(untouchedDate)) {
             values.put(KANJI_DUEDATE, date);
             values.put(KANJI_CONSECUTIVE_ANSWERED, correct+1);
             values.put(KANJI_DATE_REVIEWED, dateReviewed);
             values.put(KANJI_EASINESS, newEF);
         }
         else {
-
-            values.put(KANJI_DUEDATE, curDate+86400000); // this way, the algorithm for spacing wont get fucked up if user
-            values.put(KANJI_PREV_DUEDATE, curDate); // decides to quiz himself early. Maybe do this earlier for better eff.
+            values.put(KANJI_DUEDATE, untouchedDate+8640000); // this way, the algorithm for spacing wont get fucked up if user
         }
 
-        db.update(UserPrefs.getTier(), values, KEY_KANJI_ID + " = " + id, null);
+        db.update(TABLE_TIERS, values, KEY_KANJI_ID + " = " + id, null);
         db.close();
     }
 
-   // public int itemsStudied() {
-     //   String query = "SELECT * FROM " + UserPrefs.getTier() + " WHERE next_"
-    //}
 
     public boolean readyToIncrementDate(long date) {
         if(date>System.currentTimeMillis()) {
@@ -175,38 +234,63 @@ public class TierDBHandler extends SQLiteAssetHelper {
         return true;
     }
 
-    public void arrangeDifficulty(int num) {
-        int kanjiCount = getTierKanjiAmt();
+    public void arrangeTiers() {
+        int bronzeMod = 266%8;
+        int copperMod = (570-267)%8;
+        int silverMod = (971 - 571)%8;
+        int goldMod = (1372 - 972)%8;
+        String[] tiers = {"Bronze", "Copper", "Silver", "Gold"};
+        int[] howMany = {bronzeMod, copperMod, silverMod, goldMod};
+        int[] brackets = {266/15, (570-267)/15, (971-571)/15, (1372-972)/15};
         SQLiteDatabase db = this.getWritableDatabase();
-        int modulus = kanjiCount % UserPrefs.getDifficulty();
-        int howMany = kanjiCount / UserPrefs.getDifficulty();
+        int begin = 1;
+        int end = begin + 15;
+        int store = 0;
 
-        int end = UserPrefs.getDifficulty();
-        int begin = 0;
-        int fuck = 0;
+        for(int i = 0;i<4;i++) {
+            String tier = tiers[i];
+            int noob = howMany[i];
+            int bracket = brackets[i];
+            Log.d("bracket", bracket+" h");
+            for(int j = 1;j<=bracket;j++) {
+                ContentValues values = new ContentValues();
+                values.put(KANJI_BRACKET, j);
+                String where = "id>=? AND id<=? AND Tier=?";
+                String[] whereArgs = {String.valueOf(begin), String.valueOf(end), tier};
+                db.update(TABLE_TIERS, values, where, whereArgs);
+                begin+=15;
+                end+=15+begin;
+                store = j;
+                Log.d("begin end", ""+begin+" "+ end);
+            }
 
-        for(int i = 1; i<=howMany; i++) {
-            db.execSQL("UPDATE " + UserPrefs.getTier() + " SET " + KANJI_BRACKET + " = " + i + " WHERE id >= " + begin + " AND " +
-                    "id <=" + end);
-            Log.d("Exec", Integer.toString(begin));
-            end+= UserPrefs.getDifficulty();
-            begin += UserPrefs.getDifficulty();
-            fuck = i;
-        }
-        if(!(modulus==0)) {
-            fuck++;
-            db.execSQL("UPDATE " + UserPrefs.getTier() + " SET " + USER_BRACKET + " = 1 WHERE ID <= "
-                    + UserPrefs.getDifficulty());
+            if(noob!=0) {
+                ContentValues values = new ContentValues();
+                values.put(KANJI_BRACKET, store+1);
+                String where = "id > " + end + " AND Tier = '" + tier + "'";
+                db.execSQL("UPDATE Tiers SET bracket = " + (store+1) + " WHERE id > " + end + " AND id <= " + (end+noob) + " AND Tier = '" + tier + "'");
+              //  db.update(TABLE_TIERS, values, where, null);
 
-            db.execSQL("UPDATE " + UserPrefs.getTier() + " SET " + USER_BRACKET + " = " + fuck +
-                    " WHERE id > " + --begin);
+                begin = noob + end + 1;
+                end = begin + 15;
+            }
+
         }
 
         db.close();
     }
 
-    public int getTierKanjiAmt() {
-        String query = "SELECT Count(*) FROM " + UserPrefs.getTier();
+    public void initialize() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("beginner", "false");
+        db.update(USER_SETTINGS, values, null, null);
+    }
+
+
+
+    public int getTierDBKanjiAmt() {
+        String query = "SELECT Count(*) FROM " + TABLE_TIERS + " WHERE Tier = " + UserPrefs.getTierDB();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
@@ -252,7 +336,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
         String grabInfoQuery = String.format("SELECT * FROM %s",
                 USER_SETTINGS
                 );
-      //  String grabInfoQuery = "SELECT Tier, Bracket FROM User_Settings";
+        Log.d("user", "run");
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(grabInfoQuery, null);
@@ -262,6 +346,22 @@ public class TierDBHandler extends SQLiteAssetHelper {
             UserPrefs.setTier(cursor.getString(cursor.getColumnIndex(USER_TIER)));
             UserPrefs.setBracket(cursor.getInt(cursor.getColumnIndex(USER_BRACKET)));
             UserPrefs.setDifficulty(cursor.getInt(cursor.getColumnIndex(USER_DIFFICULTY)));
+            UserPrefs.setReviewBracket(grabQuestions());
+            UserPrefs.setUnlockedTier(cursor.getString(cursor.getColumnIndex(USER_UNLOCKED_TIER)));
+            UserPrefs.setGrade(cursor.getInt(cursor.getColumnIndex(USER_GRADE)));
+            UserPrefs.setMultChoice(cursor.getString(cursor.getColumnIndex(USER_MULT_CHOICE)));
+
+            String beginner = cursor.getString(cursor.getColumnIndex("beginner"));
+
+            if(beginner.equals("true")) {
+                UserPrefs.setBeginner(true);
+            }
+            else {
+                UserPrefs.setBeginner(false);
+            }
+
+
+            UserPrefs.setStudyBracket(arrangeStudyLevel());
         }
         catch (Exception e) {
             Log.d("Failed to set user", e.toString());
@@ -280,7 +380,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
         Long currentDay = System.currentTimeMillis();
         int ctr = 0;
 
-        String query = "SELECT " + KANJI_DUEDATE + " FROM " + UserPrefs.getTier() + " WHERE " + KANJI_DUEDATE
+        String query = "SELECT " + KANJI_DUEDATE + " FROM " + TABLE_TIERS + " WHERE " + KANJI_DUEDATE
                 + " < " + currentDay;
         Cursor cursor = db.rawQuery(query, null);
 
@@ -303,32 +403,6 @@ public class TierDBHandler extends SQLiteAssetHelper {
         return ctr;
     }
 
-    public List<Kanji> getTiersKanji(String tier) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + tier;
-
-        Cursor cursor = db.rawQuery(query, null);
-        List<Kanji> kanjiChars = new ArrayList<Kanji>();
-
-        try {
-            if(cursor.moveToFirst()) {
-                do {
-                    Kanji kanjiRow = grabKanji(cursor);
-                    kanjiChars.add(kanjiRow);
-                } while (cursor.moveToNext());
-            }
-        }
-        catch (Exception e) {
-            Log.d("ERROR-ARRANGE BRACKET", "There was an error arranging the brackets.");
-        }
-        finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-                db.close();
-            }
-        }
-        return kanjiChars;
-    }
 
     public Tier arrangeBracketsForTier(String userSelectedTier) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -337,18 +411,16 @@ public class TierDBHandler extends SQLiteAssetHelper {
         int initialBracket = 1;
 
         Bracket bracket = new Bracket(initialBracket, userSelectedTier);
-        String queryForTier = String.format("SELECT * FROM %s", userSelectedTier);
-
+        String tier = userSelectedTier;
+        String queryForTier = "SELECT * FROM Tiers WHERE Tier = '" +  tier.substring(0,1).toUpperCase() + tier.substring(1) + "'";
         Cursor cursor = db.rawQuery(queryForTier, null);
-
-
+        Log.d("cursor size", ""+cursor.getCount());
         try {
             if(cursor.moveToFirst()) {
                 do {
                     if (initialBracket == cursor.getInt(cursor.getColumnIndex("bracket"))) {
                         Kanji kanjiOfRow = grabKanji(cursor);
                         bracket.addKanjiToBracket(kanjiOfRow);
-
                     } else {
                         selectedTier.addBracket(bracket);
                         initialBracket++;
@@ -377,11 +449,11 @@ public class TierDBHandler extends SQLiteAssetHelper {
 
     public Bracket arrangeStudyLevel() {
 
-        Bracket userLevelBracket = new Bracket(UserPrefs.getBracket(), UserPrefs.getTier());
+        Bracket userLevelBracket = new Bracket(UserPrefs.getBracket(), UserPrefs.getTierDB());
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String queryForBracketLevel = String.format("SELECT * FROM %s WHERE %s = %s",
-                UserPrefs.getTier(), KANJI_BRACKET, userLevelBracket.getId());
+        String queryForBracketLevel = String.format("SELECT * FROM %s WHERE %s = %s AND Tier = %s",
+                TABLE_TIERS, KANJI_BRACKET, userLevelBracket.getId(), UserPrefs.getTierDB());
 
         Cursor cursor = db.rawQuery(queryForBracketLevel, null);
 
@@ -430,7 +502,6 @@ public class TierDBHandler extends SQLiteAssetHelper {
             values.put(USER_BRACKET, UserPrefs.getBracket()+1);
             db.update(USER_SETTINGS, values, null, null);
             UserPrefs.setBracket(UserPrefs.getBracket()+1);
-            Log.d("UserPrefs bracket", Integer.toString(UserPrefs.getBracket()));
         }
         db.close();
     }
@@ -439,7 +510,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        String maxQuery = String.format("SELECT MAX(%s) FROM %s", KANJI_BRACKET, UserPrefs.getTier());
+        String maxQuery = String.format("SELECT MAX(%s) FROM %s WHERE Tier = %s", KANJI_BRACKET, TABLE_TIERS, UserPrefs.getTierDB());
         Cursor cursor = db.rawQuery(maxQuery, null);
 
         cursor.moveToFirst();
@@ -447,7 +518,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
 
         if(UserPrefs.getBracket() >= max) {
             String newTier = tierHierachy(UserPrefs.getTier());
-            values.put(USER_TIER, newTier); // will return upper tier
+            values.put(USER_TIER, newTier); // will return upper tier, make sure this staples where user is at in tiers
             values.put(USER_BRACKET, 1);
             db.update(USER_SETTINGS, values, null, null);
             UserPrefs.setTier(newTier);
@@ -468,32 +539,72 @@ public class TierDBHandler extends SQLiteAssetHelper {
         if(preceedingTier.equals("Copper"))
             return "Silver";
         if(preceedingTier.equals("Silver"))
+            return "Gold";
+        if(preceedingTier.equals("Gold"))
             return "Platinum";
         if(preceedingTier.equals("Platinum"))
             return "Diamond";
-        if(preceedingTier.equals("Diamond"))
-            return "Master";
         return "";
+    }
+
+
+    public ArrayList<Question> grabNormalQuestions() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM ( SELECT * FROM Tiers ORDER BY next_due_date ASC) WHERE next_due_date IS NOT NULL AND next_due_date > 0;";
+        Cursor cursor = db.rawQuery(query, null);
+
+        ArrayList<Question> questions = new ArrayList<Question>();
+        Log.d("lists", Integer.toString(cursor.getCount()));
+        int lim = 0;
+        QuizSession session;
+
+        try {
+            if(cursor.moveToFirst()) {
+                do {
+                    lim++;
+                    Kanji kanjiOfRow = grabKanji(cursor);
+                    RecallQuestion questionOfRow = new RecallQuestion(kanjiOfRow, kanjiOfRow.getCharacter());
+                    RecogQuestion recQuestionOfRow = new RecogQuestion(kanjiOfRow, kanjiOfRow.getName());
+                    questions.add(questionOfRow);
+                    questions.add(recQuestionOfRow);
+
+
+                } while(cursor.moveToNext() & lim < 3);
+            }
+
+
+        }
+        catch(Exception e) {
+
+        }
+        finally {
+            Collections.shuffle(questions);
+
+        }
+        return questions;
     }
 
     public QuizSession grabQuestions() {
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM ( SELECT * FROM Bronze ORDER BY next_due_date ASC) WHERE next_due_date IS NOT NULL AND next_due_date > 0;";
-        Cursor cursor = db.rawQuery(query, null);
 
+        String query = "SELECT * FROM ( SELECT * FROM Tiers ORDER BY next_due_date ASC) WHERE next_due_date IS NOT NULL AND next_due_date > 0;";
+        Cursor cursor = db.rawQuery(query, null);
+        ArrayList<String> chars = new ArrayList<String>();
 
         ArrayList<KanjiQuestion> questions = new ArrayList<KanjiQuestion>();
         Log.d("hi", Integer.toString(cursor.getCount()));
         int lim = 0;
         QuizSession session;
         try {
-            if(cursor.moveToFirst() && lim < 2) {
+            if(cursor.moveToFirst()) {
                 do {
                     lim++;
-
-                    Answer rightAnswer = new Answer(grabKanji(cursor), true);
-                    ArrayList<Answer> wrongAnswers = grab3WrongAnswers();
+                    chars.add(cursor.getString(cursor.getColumnIndex(KANJI_CHARACTER)));
+                    Kanji kanjiOfRow = grabKanji(cursor);
+                    Answer rightAnswer = new Answer(kanjiOfRow, true);
+                    ArrayList<Answer> wrongAnswers = grab3WrongAnswers(rightAnswer.getKanji().getID());
                     wrongAnswers.add(rightAnswer); // this is to shuffle it.
                     Collections.shuffle(wrongAnswers);
 
@@ -509,12 +620,14 @@ public class TierDBHandler extends SQLiteAssetHelper {
                     String recogAnswer = rightAnswer.getKanji().getName(); // meaning
                     recognitionQuestionOfRow.setActualAnswer(recogAnswer);
 
-                    KanjiQuestion questionOfRow = new KanjiQuestion(recogAnswer, recallAnswer);
+                    KanjiQuestion questionOfRow = new KanjiQuestion(recallAnswer, recogAnswer);
                     questionOfRow.addQuestion(recallQuestionOfRow);
                     questionOfRow.addQuestion(recognitionQuestionOfRow);
+                    questionOfRow.setAttachedKanji(kanjiOfRow);
                     questions.add(questionOfRow);
 
-                } while(cursor.moveToNext() && lim<3);
+
+                } while(cursor.moveToNext() && lim<8);
             }
         }
         catch (Exception e) {
@@ -527,6 +640,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
             }
             Collections.shuffle(questions);
             session = new QuizSession(questions);
+            session.setChars(chars);
         }
         Log.d("Checking contents of st", session.toString());
         return session;
@@ -534,13 +648,13 @@ public class TierDBHandler extends SQLiteAssetHelper {
 
 
 
-    public ArrayList<Answer> grab3WrongAnswers() {
+    public ArrayList<Answer> grab3WrongAnswers(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Random rand = new Random();
-        int random = rand.nextInt(100) + 1; // account for possibility of random actually getting right answer in range later.
+        int random = rand.nextInt(1300) + 5; // account for possibility of random actually getting right answer in range later.
         ArrayList<Answer> wrongAnswers3 = new ArrayList<Answer>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM Bronze WHERE ID < " + random + " AND ID > " + (random-4), null);
+        Cursor cursor = db.rawQuery("SELECT * FROM Tiers WHERE ID < " + random + " AND ID > " + (random-5) + " AND ID IS NOT " + id, null);
 
         try {
             if(cursor.moveToFirst()) {
@@ -569,7 +683,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
         Kanji currentKanji = new Kanji();
 
         String query = String.format("SELECT * FROM %s WHERE %s = %s",
-                UserPrefs.getTier(), KEY_KANJI_ID, id // format it later to account for variable tier
+                TABLE_TIERS, KEY_KANJI_ID, id // format it later to account for variable tier
         );
 
         Cursor cursor = db.rawQuery(query, null);
@@ -581,7 +695,7 @@ public class TierDBHandler extends SQLiteAssetHelper {
                     String elements = cursor.getString(cursor.getColumnIndex("Radicals"));
                     String name = cursor.getString(cursor.getColumnIndex(("Name")));
                     String character = cursor.getString(cursor.getColumnIndex("Character"));
-
+                    currentKanji.setID(cursor.getInt(cursor.getColumnIndex(KEY_KANJI_ID)));
                     currentKanji.setElements(elements);
                     currentKanji.setCharacter(character);
                     currentKanji.setName(name);
@@ -602,86 +716,3 @@ public class TierDBHandler extends SQLiteAssetHelper {
         return currentKanji;
     }
 }
-
-
-/* possibly needed methods
-public Kanji grabKanjiChar() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Kanji currentKanji = new Kanji();
-
-        String query = String.format("SELECT * FROM %s WHERE %s = %s",
-                UserPrefs.getTier(), KEY_KANJI_ID, UserPrefs.getPosition() // format it later to account for variable tier
-                );
-
-        String query2 = "SELECT * FROM Bronze";
-
-        Cursor cursor = db.rawQuery(query2, null);
-        Log.d("cursor count", Integer.toString(cursor.getCount()));
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-
-                    String elements = cursor.getString(cursor.getColumnIndex("Radicals"));
-                    String name = cursor.getString(cursor.getColumnIndex(("Name")));
-                    String character = cursor.getString(cursor.getColumnIndex("Character"));
-                    String story = cursor.getString(cursor.getColumnIndex("Story"));
-                    currentKanji.setElements(elements);
-                    currentKanji.setCharacter(character);
-                    currentKanji.setName(name);
-                    currentKanji.setExampleStory(story);
-                } while(cursor.moveToNext());
-            }
-        }
-        catch (Exception e) {
-           // Log.d(TAG, "Error while trying to get posts");
-        }
-        finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-                db.close();
-
-            }
-        }
-        return currentKanji;
-    }
-
-    public Kanji grabIdKanjiChar(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Kanji currentKanji = new Kanji();
-
-        String query = String.format("SELECT * FROM %s WHERE %s = %s",
-                UserPrefs.getTier(), KEY_KANJI_ID, id // format it later to account for variable tier
-        );
-
-        Cursor cursor = db.rawQuery(query, null);
-
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-
-                    String elements = cursor.getString(cursor.getColumnIndex("Radicals"));
-                    String name = cursor.getString(cursor.getColumnIndex(("Name")));
-                    String character = cursor.getString(cursor.getColumnIndex("Character"));
-
-                    currentKanji.setElements(elements);
-                    currentKanji.setCharacter(character);
-                    currentKanji.setName(name);
-
-                } while(cursor.moveToNext());
-            }
-        }
-        catch (Exception e) {
-            // Log.d(TAG, "Error while trying to get posts");
-        }
-        finally {
-            if (cursor != null && !cursor.isClosed()) {
-                cursor.close();
-                db.close();
-
-            }
-        }
-        return currentKanji;
-    }
-
-
- */

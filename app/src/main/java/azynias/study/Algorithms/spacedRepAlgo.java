@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Albedo on 7/3/2017.
  * account for quality ,
- * if fail = > new item ressurection F A R T N IGGERS !!! ALLAH AKBAR
+ * if fail = > new item
  */
 
 public class spacedRepAlgo {
@@ -30,7 +30,7 @@ public class spacedRepAlgo {
             return 0;
         }
         else if(reps==2)
-            return 6;
+            return 3;
         else {
             int days = Math.round(interval * ef);
             Log.d("check", ""+days);

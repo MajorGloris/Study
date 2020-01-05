@@ -1,0 +1,118 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+
+    tools:context="azynias.study.Fragments.normalQuizFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="azynias.study.Fragments.ProgressFragment">
+
+        <TextView
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="85sp"
+            android:id="@+id/normal_quiz_area_kanji"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <android.support.v7.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:id="@+id/normal_shake"
+            android:layout_height="wrap_content"
+            card_view:cardUseCompatPadding="true"
+            card_view:cardElevation="5dp"
+            card_view:cardCornerRadius="3dp"
+            >
+            <EditText
+                android:textColor="@color/black"
+                android:hint="Enter answer here"
+                android:visibility="invisible"
+                android:id="@+id/normal_answer_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <azynias.study.ObjectModels.SimpleDrawView
+                android:visibility="invisible"
+                android:id="@+id/normal_quiz_draw"
+                android:layout_width="match_parent"
+                android:layout_height="140dp" />
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            card_view:cardUseCompatPadding="true"
+            card_view:cardElevation="5dp"
+            card_view:cardCornerRadius="3dp"
+            >
+            <LinearLayout
+                android:gravity="center"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:gravity="center"
+
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/black"
+                        android:textAlignment="center"
+                        android:id="@+id/normal_questions_wrong_quiz"
+                        android:textStyle="bold"
+                        android:textSize="26sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:fontFamily="sans-serif-condensed"
+                        android:id="@+id/normal_questions_left_quiz"
+                        android:textStyle="bold"
+                        android:textSize="26sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:id="@+id/clear_quiz_normal"
+                        android:background="@null"
+                        android:src="@drawable/ic_clear_black_24dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp" />
+                    <ImageButton
+                        android:background="@null"
+                        android:src="@drawable/ic_forward_black_24dp"
+                        android:id="@+id/normal_quiz_next_question"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_study"
+        android:enabled="true"
+        android:icon="@drawable/ic_study"
+        android:title="Study"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_practice"
+        android:enabled="true"
+        android:icon="@drawable/ic_practice"
+        android:title="Practice"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_progress"
+        android:enabled="true"
+        android:icon="@drawable/ic_progress"
+        android:title="Progress"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_shop"
+        android:enabled="true"
+        android:icon="@drawable/ic_shopping_cart"
+        android:title="Shop"
+        app:showAsAction="ifRoom" />
+
+
+
+</menu>

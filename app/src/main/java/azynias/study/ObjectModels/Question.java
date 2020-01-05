@@ -14,12 +14,24 @@ public class Question {
     private int wrong = 0;
     private boolean recall; // true = recall, false = recognition
     private boolean on = true; // true = on, false = off
-
+    private Kanji kanji;
     private String actualAnswer;
 
     public Question(boolean recall) {
         this.recall = recall;
         this.answers = new ArrayList<Answer>();
+    }
+
+    public Question() {
+
+    }
+
+    public Kanji getKanji() {
+        return kanji;
+    }
+
+    public void setKanji(Kanji kanji) {
+        this.kanji = kanji;
     }
 
     public boolean isOn() {

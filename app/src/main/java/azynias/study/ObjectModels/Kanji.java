@@ -18,9 +18,7 @@ public class Kanji implements Serializable {
     private Date dueDate;
 
     private String exampleStory;
-    private float easyFactor = 2.5f;
-    private int correctTimes = 0;
-    private Date nextReview;
+
 
     public Kanji() {
 
@@ -32,6 +30,10 @@ public class Kanji implements Serializable {
         this.ID = ID;
         this.exampleStory = exampleStory;
         this.bracketId = bracket;
+    }
+
+    public String getStory() {
+        return this.exampleStory;
     }
 
     public Date getDueDate() {
@@ -80,7 +82,4 @@ public class Kanji implements Serializable {
         this.exampleStory = exampleStory;
     }
 
-    public float calcEasyFactor(int performance) {
-        return 0;
-    }
 }

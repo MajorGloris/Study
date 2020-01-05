@@ -15,6 +15,7 @@ public class KanjiQuestion {
     private String rightKanjiChar;
     private String rightKanjiMeaning;
     private List<Question> questions;
+    private Kanji attachedKanji;
 
     public KanjiQuestion(String rightKanjiChar, String rightKanjiMeaning) { // recog, recall
         this.wrong = 0;
@@ -22,6 +23,14 @@ public class KanjiQuestion {
         this.rightKanjiChar = rightKanjiChar;
         this.rightKanjiMeaning = rightKanjiMeaning;
         this.questions = new ArrayList<Question>();
+    }
+
+    public Kanji getAttachedKanji() {
+        return attachedKanji;
+    }
+
+    public void setAttachedKanji(Kanji attachedKanji) {
+        this.attachedKanji = attachedKanji;
     }
 
     public int getWrong() {

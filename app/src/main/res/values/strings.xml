@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">"Study "</string>
+    <string name="app_name">"KANJI-Learn"</string>
 
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="incorrect_items">Quiz Report</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 
 public class QuizSession {
+    private ArrayList<String> kanjiChars;
     private ArrayList<KanjiQuestion> questions;
     private int maxQuestions = 8;
 
@@ -15,8 +16,19 @@ public class QuizSession {
     //    this.maxQuestions = maxQuestions;
     }
 
+
+
     public void addQuestion(KanjiQuestion question) {
         this.questions.add(question);
+    }
+
+    public ArrayList<String> getKanjiChars() {
+        return kanjiChars;
+    }
+
+
+    public void setChars(ArrayList<String> chars) {
+        this.kanjiChars = chars;
     }
 
     public ArrayList<KanjiQuestion> getQuestions() {

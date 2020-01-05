@@ -3,7 +3,9 @@ package azynias.study.DataHandlers;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +34,8 @@ public class BracketsAdapter extends RecyclerView.Adapter<BracketsAdapter.ViewHo
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         public TextView nameTextView;
-        public Button messageButton;
         public TextView bracketNumber;
+        public View card;
 
         public LinearLayout layout;
 
@@ -45,8 +47,8 @@ public class BracketsAdapter extends RecyclerView.Adapter<BracketsAdapter.ViewHo
             // to access the context from any ViewHolder instance.
             super(itemView);
 
+            card = itemView.findViewById(R.id.card_db);
             nameTextView = (TextView) itemView.findViewById(R.id.kanji_info);
-            messageButton = (Button) itemView.findViewById(R.id.view_bracket_button);
             bracketNumber = (TextView) itemView.findViewById(R.id.bracket_number);
             layout = (LinearLayout) itemView.findViewById(R.id.layout);
         }
@@ -98,39 +100,71 @@ public class BracketsAdapter extends RecyclerView.Adapter<BracketsAdapter.ViewHo
         TextView textView = viewHolder.nameTextView;
         textView.setText(bracket.toString());
 
-        if(color < bracket.getId()) {
+        boolean greater = greaterTier(bracket.getTierBelong());
+        Log.d("Greater", greater+"");
+        if(bracket.getId()<color || greater) {
 
-            bracketNum.setTextColor(Color.parseColor("#003459"));
-
-
-            textView.setTextColor(Color.parseColor("#00A8E8"));
+           if(greater) {
+               bracketNum.setTextColor(Color.BLUE);
+               textView.setTextColor(Color.BLUE);
+           }
+           else if(UserPreferences.getInstance().getTier().equals(bracket.getTierBelong()) && bracket.getId()<color) {
+               bracketNum.setTextColor(Color.BLUE);
+               textView.setTextColor(Color.BLUE);
+           }
         }
         else {
-            bracketNum.setTextColor(Color.parseColor("#F15025"));
 
-
-            textView.setTextColor(Color.parseColor("#F15025"));
+            bracketNum.setTextColor(Color.BLACK);
+            bracketNum.append(" - LOCKED");
+            textView.setTextColor(Color.BLACK);
         }
 
-        Button button = viewHolder.messageButton;
-        button.setText("View Bracket Kanji");
-        sendToKanjiAdapter(button, bracket.getKanjiChars());
+        View card = viewHolder.card;
+        sendToKanjiAdapter(card, bracket.getKanjiChars(), bracket.getTierBelong());
     }
 
+    public boolean greaterTier(String tier) {
+        String userTier = UserPreferences.getInstance().getTier();
 
+        int selectedTier = tiers(tier);
+        int userTierVal = tiers(userTier);
+
+        if(userTierVal>selectedTier) {
+            return true;
+        }
+        return false;
+    }
+
+    private int tiers(String preceedingTier) {
+        if(preceedingTier.equals("Bronze"))
+            return 1;
+        if(preceedingTier.equals("Copper"))
+            return 2;
+        if(preceedingTier.equals("Silver"))
+            return 3;
+        if(preceedingTier.equals("Gold"))
+            return 4;
+        if(preceedingTier.equals("Platinum"))
+            return 5;
+        if(preceedingTier.equals("Diamond"))
+            return 6;
+        return 0;
+    }
 
     @Override
     public int getItemCount() {
         return bracketsList.size();
     }
 
-    public void sendToKanjiAdapter(final Button btn, final ArrayList<Kanji> characters) {
-        btn.setOnClickListener(new View.OnClickListener() {
+    private void sendToKanjiAdapter(final View view, final ArrayList<Kanji> characters, final String tier) {
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 KanjiDetailsWrapper wrapper = new KanjiDetailsWrapper(characters);
                 Intent i = new Intent(mContext, KanjiRecyclerViewActivity.class);
                 i.putExtra("kanji_chars", wrapper);
+                i.putExtra("the_tier", tier);
                 mContext.startActivity(i);
             }
         });

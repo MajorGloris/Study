@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00A8E8</color>
-    <color name="colorPrimaryDark">#003459</color>
+    <color name="colorPrimary">#5FBFF9</color>
+    <color name="colorPrimaryDark">#3386EE</color>
     <color name="colorAccent">#007EA7</color>
     <color name="white">#ffffffff</color>
     <color name="black">#000000</color>
-    <color name="alice_blue">#edf8fb</color>
-    <color name="prussian_blue">#003459</color>
+    <color name="background_gray">#EFE9F4</color>
 </resources>

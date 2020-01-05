@@ -7,7 +7,9 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -25,6 +27,13 @@ import azynias.study.R;
 public class KanjiRecyclerViewActivity extends AppCompatActivity {
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kanji_recycler_view);
@@ -33,20 +42,24 @@ public class KanjiRecyclerViewActivity extends AppCompatActivity {
         Intent i = getIntent();
         Bundle b = i.getExtras();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //List<Kanji> kanjis = tierDBHandler.getTiersKanji("Bronze");
-        KanjiDetailsWrapper wrap = (KanjiDetailsWrapper) getIntent().getSerializableExtra("kanji_chars");
+        KanjiDetailsWrapper wrap = (KanjiDetailsWrapper) i.getSerializableExtra("kanji_chars");
         ArrayList<Kanji> list = wrap.getItemDetails();
 
-        KanjiAdapter adapter = new KanjiAdapter(this, list);
-        RecyclerView rvBrackets = (RecyclerView) findViewById(R.id.rvContacts);
+
+        KanjiAdapter adapter = new KanjiAdapter(this, list, getIntent().getStringExtra("the_tier"));
+        RecyclerView rvKanji = (RecyclerView) findViewById(R.id.rvContacts);
+        rvKanji.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        rvBrackets.setAdapter(adapter);
-        rvBrackets.setLayoutManager(layoutManager);
+        rvKanji.setAdapter(adapter);
+        rvKanji.setLayoutManager(layoutManager);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvBrackets.getContext(),
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvKanji.getContext(),
                 layoutManager.getOrientation());
-        rvBrackets.addItemDecoration(dividerItemDecoration);
+        rvKanji.addItemDecoration(dividerItemDecoration);
     }
 }

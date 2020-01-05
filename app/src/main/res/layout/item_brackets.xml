@@ -4,22 +4,53 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/layout"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
     >
-    <TextView
-        android:textSize="25sp"
-        android:id="@+id/bracket_number"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_db"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
-    <TextView
-        android:textSize="45sp"
-        android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/kanji_info"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/view_bracket_button"
-        />
+
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="5dp"
+        card_view:cardCornerRadius="3dp"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="25sp"
+                android:id="@+id/bracket_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                />
+            <View
+                android:background="@drawable/line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                >
+
+            </View>
+            <TextView
+                android:textSize="45sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/kanji_info"/>
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
 </LinearLayout>

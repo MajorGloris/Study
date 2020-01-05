@@ -26,6 +26,7 @@ public class KanjiDashboardActivity extends AppCompatActivity implements Dashboa
 
         if(id==1) {
             Intent i = new Intent(KanjiDashboardActivity.this, StudyActivity.class);
+
             startActivity(i);
         }
         if (id==2) {
